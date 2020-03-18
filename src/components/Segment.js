@@ -1,31 +1,25 @@
-import React, { useEffect } from "react";
+import React from "react";
 import AddFields from "./AddFields";
+import { useSegment } from "../customHooks";
 function Segment(props) {
   const [editIndex, setEditIndex] = React.useState(null);
   const [editField, setEditField] = React.useState(false);
-  const [segment, setSegment] = React.useState(null);
+  const {
+    getCurrentSegment,
+    editSegmentField,
+    addSegmentField,
+    setSegmentKeys
+  } = useSegment();
   const [dialog, setDialog] = React.useState(false);
-  useEffect(() => {
-    setSegment(props?.value);
-
-    return function() {
-      console.log("unmounting");
-    };
-  }, [props.value]);
-
   const toggleAddField = state => {
     setDialog(state);
-  };
-
-  const setSegmentKeys = value => {
-    props.setSegmentKeys(value);
   };
   const EditField = index => {
     setEditField(true);
     setEditIndex(index);
     setDialog(true);
   };
-  if (segment !== null) {
+  if (getCurrentSegment() !== null) {
     return (
       <div
         style={{
@@ -40,24 +34,16 @@ function Segment(props) {
       >
         {dialog && (
           <AddFields
-            field={segment.fields[editIndex]}
+            field={getCurrentSegment().fields[editIndex]}
             editField={editField}
             toggleDialog={toggleAddField}
             editFieldValue={value => {
-              setSegmentKeys({
-                fields: segment.fields.map((item, index) => {
-                  if (index === editIndex) {
-                    return value;
-                  } else return item;
-                })
-              });
+              editSegmentField(value, editIndex);
               setEditIndex(null);
               setEditField(false);
             }}
-            addField={value =>
-              setSegmentKeys({ fields: [...segment.fields, value] })
-            }
-            name={segment.title}
+            addField={addSegmentField}
+            name={getCurrentSegment().title}
           />
         )}
 
@@ -65,13 +51,13 @@ function Segment(props) {
           style={styles.input}
           // onFocus={()=>}
           type="text"
-          placeholder={segment.title}
+          placeholder={getCurrentSegment().title}
           onChange={e => setSegmentKeys({ title: e.target.value })}
         />
         <input
           style={styles.input}
           type="text"
-          placeholder={segment.subtitle}
+          placeholder={getCurrentSegment().subtitle}
           onChange={e => setSegmentKeys({ subtitle: e.target.value })}
         />
         <input
@@ -80,8 +66,8 @@ function Segment(props) {
           placeholder="Enter URL for illustration (optional)"
           onChange={e => setSegmentKeys({ illustration: e.target.value })}
         />
-        {segment.fields.length !== 0 &&
-          segment.fields.map((item, index) => {
+        {getCurrentSegment().fields.length !== 0 &&
+          getCurrentSegment().fields.map((item, index) => {
             return (
               <div
                 style={{ border: "3px solid black", padding: 15, margin: 15 }}

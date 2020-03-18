@@ -1,27 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
+
 import Segment from "./Segment";
+import { useSegment } from "../customHooks";
 function FormMaker() {
-  const [segments, setSegments] = React.useState([
-    {
-      title: "Section Title",
-      subtitle: "Section Subtitle",
-      illustration: "",
-      fields: []
-    }
-  ]);
-
-  const addSection = () => {
-    setSegments([
-      ...segments,
-      {
-        title: "Section Title",
-        subtitle: "Section Subtitle",
-        illustration: "",
-        fields: []
-      }
-    ]);
-  };
-
+  const {
+    addSection,
+    getSegments,
+    getCurrentSegment,
+    getActiveIndex
+  } = useSegment();
+  var segment = getCurrentSegment();
   return (
     <div
       style={{
@@ -31,23 +19,17 @@ function FormMaker() {
         justifyContent: "center"
       }}
     >
-      {segments.map((item, index) => (
-        <Segment
-          setSegmentKeys={value => {
-            setSegments(
-              segments.map((item, i) => {
-                if (index === i) {
-                  return { ...item, ...value };
-                } else return item;
-              })
-            );
-          }}
-          value={item}
-        />
-      ))}
+      <Segment />
 
       <div style={{ alignSelf: "center" }}>
         <button onClick={addSection}>Add Section</button>
+      </div>
+      <div style={{ alignSelf: "center" }}>
+        <button
+          onClick={() => console.log("segments:", segment, getActiveIndex())}
+        >
+          Show Segments
+        </button>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ export default function AddFields(props) {
   const [type, setType] = React.useState(
     props?.field?.type ?? "custom_text_input"
   );
+
   const [name, setName] = React.useState(props?.field?.name ?? "bride_name");
   const [required, setRequired] = React.useState(
     props?.field?.required ?? "true"
@@ -33,7 +34,13 @@ export default function AddFields(props) {
   const toggleDialog = state => {
     props.toggleDialog(state);
   };
-  const addField = () => {
+  // editFieldValue={value => {
+  //   editSegmentField(value, editIndex);
+  //   setEditIndex(null);
+  //   setEditField(false);
+  // }}
+  // addField={addSegmentField}
+  const handleFieldSubmit = () => {
     props.editField
       ? props.editFieldValue({ type, label, required, maxLength, name })
       : props.addField({ type, label, required, maxLength, name });
@@ -184,8 +191,8 @@ export default function AddFields(props) {
           padding: 10
         }}
       >
-        <button style={{ margin: 8 }} onClick={addField}>
-          Add Field
+        <button style={{ margin: 8 }} onClick={handleFieldSubmit}>
+          {props.editField ? "Edit" : "Add Field"}
         </button>
         <button style={{ margin: 8 }} onClick={() => toggleDialog(false)}>
           Close
