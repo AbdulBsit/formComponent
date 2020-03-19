@@ -6,10 +6,12 @@ export const REMOVE_SEGMENT = "REMOVE_SEGMENT";
 export const EDIT_SEGMENT_KEYS = "EDIT_SEGMENT_KEYS";
 export const SET_ACTIVE_INDEX = "SET_ACTIVE_INDEX";
 export function segmentReducer(state, action) {
+  console.log("from 9", state, action);
   switch (action.type) {
     case ADD_SEGMENT:
+      console.log("state ebefore addding section", state);
       return [
-        ...state,
+        ...action.payload,
         {
           title: "Section Title",
           subtitle: "Section Subtitle",
@@ -25,7 +27,7 @@ export function segmentReducer(state, action) {
 
     case EDIT_SEGMENT_KEYS:
       console.log("before edit global state", state);
-      return state.map((item, index) => {
+      state = state.map((item, index) => {
         console.log("this is item no", index + 1, item);
         if (index === action.payload.activeIndex) {
           return { ...item, ...action.payload.value };
@@ -33,15 +35,16 @@ export function segmentReducer(state, action) {
           return item;
         }
       });
+      console.log("after edit", state);
+      return state;
 
       break;
     default:
-      console.log("this is default", state);
       return state;
   }
 }
 
-export function activeIndexReducer(state = 0, action) {
+export function activeIndexReducer(state, action) {
   switch (action.type) {
     case SET_ACTIVE_INDEX:
       return action.payload;

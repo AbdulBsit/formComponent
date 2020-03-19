@@ -3,13 +3,16 @@ import React, { useEffect } from "react";
 import Segment from "./Segment";
 import { useSegment } from "../customHooks";
 function FormMaker() {
-  const {
-    addSection,
-    getSegments,
-    getCurrentSegment,
-    getActiveIndex
-  } = useSegment();
-  var segment = getCurrentSegment();
+  const { addSection, segmentsState, activeIndexState } = useSegment();
+  const [activeIndex, setActiveIndex] = React.useState(activeIndexState);
+  const [segments, setSegments] = React.useState(segmentsState);
+  const [segment, setSegment] = React.useState(segments[activeIndex]);
+
+  useEffect(() => {
+    setActiveIndex(activeIndexState);
+    setSegments(segmentsState);
+    setSegment(segments[activeIndex]);
+  }, [activeIndexState, activeIndexState]);
   return (
     <div
       style={{
@@ -26,7 +29,9 @@ function FormMaker() {
       </div>
       <div style={{ alignSelf: "center" }}>
         <button
-          onClick={() => console.log("segments:", segment, getActiveIndex())}
+          onClick={() =>
+            console.log("segments:", segment, segments, activeIndex)
+          }
         >
           Show Segments
         </button>

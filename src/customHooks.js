@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   segmentReducer,
   activeIndexReducer,
@@ -6,8 +6,9 @@ import {
   EDIT_SEGMENT_KEYS,
   SET_ACTIVE_INDEX
 } from "./Reducer";
+
 export function useSegment() {
-  const [segments, segmentsDispatch] = React.useReducer(segmentReducer, [
+  const [segmentsState, setSegmentsState] = useState([
     {
       title: "Section Title",
       subtitle: "Section Subtitle",
@@ -15,48 +16,54 @@ export function useSegment() {
       fields: []
     }
   ]);
-  console.log("from line 15", segments);
+  const [activeIndexState, setActiveIndexState] = useState(0);
+
+  const [segments, segmentsDispatch] = React.useReducer(
+    segmentReducer,
+    segmentsState
+    //segmentReducer
+  );
+
   const [activeIndex, dispatchActiveindex] = React.useReducer(
     activeIndexReducer,
-    0
+    activeIndexState
+    //activeIndexState
   );
+  useEffect(() => {
+    setSegmentsState(segments);
+    setActiveIndexState(activeIndex);
+  }, [segments, activeIndex]);
+
   function addSection() {
-    segmentsDispatch({ type: ADD_SEGMENT });
-    dispatchActiveindex({ type: SET_ACTIVE_INDEX, payload: activeIndex + 1 });
+    segmentsDispatch({ type: ADD_SEGMENT, payload: segmentsState });
+    dispatchActiveindex({
+      type: SET_ACTIVE_INDEX,
+      payload: activeIndexState + 1
+    });
   }
   function setSegmentKeys(value) {
-    console.log("from line 25", value);
     segmentsDispatch({
       type: EDIT_SEGMENT_KEYS,
-      payload: { activeIndex, value }
+      payload: { activeIndex: activeIndexState, value }
     });
   }
   function addSegmentField(value) {
     segmentsDispatch({
       type: EDIT_SEGMENT_KEYS,
       payload: {
-        activeIndex,
-        value: { fields: [...segments[activeIndex].fields, value] }
+        activeIndex: activeIndexState,
+        value: { fields: [...segmentsState[activeIndexState].fields, value] }
       }
     });
   }
-  function getActiveIndex() {
-    return activeIndex;
-  }
-  function getSegments() {
-    return segments;
-  }
-  function getCurrentSegment() {
-    console.log("this is current segment", segments[activeIndex]);
-    return segments[activeIndex];
-  }
+
   function editSegmentField(value, editIndex) {
     segmentsDispatch({
       type: EDIT_SEGMENT_KEYS,
       payload: {
-        activeIndex,
+        activeIndexState,
         value: {
-          fields: segments[activeIndex].fields.map((item, index) => {
+          fields: segmentsState[activeIndexState].fields.map((item, index) => {
             if (index === editIndex) {
               return value;
             } else return item;
@@ -67,9 +74,8 @@ export function useSegment() {
   }
 
   return {
-    getActiveIndex,
-    getSegments,
-    getCurrentSegment,
+    activeIndexState,
+    segmentsState,
     addSection,
     setSegmentKeys,
     addSegmentField,
