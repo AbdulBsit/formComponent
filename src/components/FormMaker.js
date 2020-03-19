@@ -1,18 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import Segment from "./Segment";
-import { useSegment } from "../customHooks";
-function FormMaker() {
-  const { addSection, segmentsState, activeIndexState } = useSegment();
-  const [activeIndex, setActiveIndex] = React.useState(activeIndexState);
-  const [segments, setSegments] = React.useState(segmentsState);
-  const [segment, setSegment] = React.useState(segments[activeIndex]);
+import { useActions } from "../actions";
+import { store } from "../store";
 
-  useEffect(() => {
-    setActiveIndex(activeIndexState);
-    setSegments(segmentsState);
-    setSegment(segments[activeIndex]);
-  }, [activeIndexState, activeIndexState]);
+function FormMaker() {
+  const { state, dispatch } = React.useContext(store);
+  const { addSection } = useActions();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const addSegment = () => {
+    setActiveIndex(activeIndex + 1);
+    addSection();
+  };
+  const prevSegment = () => {
+    setActiveIndex(activeIndex - 1);
+  };
+  const nextSegment = () => {
+    setActiveIndex(activeIndex + 1);
+  };
+
   return (
     <div
       style={{
@@ -22,18 +29,21 @@ function FormMaker() {
         justifyContent: "center"
       }}
     >
-      <Segment />
-
       <div style={{ alignSelf: "center" }}>
-        <button onClick={addSection}>Add Section</button>
+        <button onClick={prevSegment} disabled={activeIndex === 0}>
+          Go To previous
+        </button>
+      </div>
+      <Segment activeIndex={activeIndex} />
+      <div style={{ alignSelf: "center" }}>
+        <button onClick={addSegment}>Add Section</button>
       </div>
       <div style={{ alignSelf: "center" }}>
         <button
-          onClick={() =>
-            console.log("segments:", segment, segments, activeIndex)
-          }
+          onClick={nextSegment}
+          disabled={activeIndex + 1 === state.length}
         >
-          Show Segments
+          Go Next Segment
         </button>
       </div>
     </div>

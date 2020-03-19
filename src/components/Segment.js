@@ -1,29 +1,31 @@
 import React from "react";
 import AddFields from "./AddFields";
-import { useSegment } from "../customHooks";
+import { useActions } from "../actions";
+import { store } from "../store";
+
 function Segment(props) {
+  const { state, dispatch } = React.useContext(store);
+  const { editSegmentField, addSegmentField, setSegmentKeys } = useActions();
   const [editIndex, setEditIndex] = React.useState(null);
   const [editField, setEditField] = React.useState(false);
-  const {
-    segmentsState,
-    activeIndexState,
-    editSegmentField,
-    addSegmentField,
-    setSegmentKeys
-  } = useSegment();
-  const [activeIndex, setActiveIndex] = React.useState(activeIndexState);
-  const [segments, setSegments] = React.useState(segmentsState);
-  const [segment, setSegment] = React.useState(segments[activeIndex]);
+  const [activeIndex, setActiveIndex] = React.useState(props.activeIndex);
   const [dialog, setDialog] = React.useState(false);
-
+  const [title, setTitle] = React.useState(state[props.activeIndex].title);
+  const [subtitle, setSubTitle] = React.useState(
+    state[props.activeIndex].subtitle
+  );
+  const [illustration, setIllustration] = React.useState(
+    state[props.activeIndex].illustration
+  );
   React.useEffect(() => {
-    setActiveIndex(activeIndexState);
-    setSegments(segmentsState);
-    setSegment(segments[activeIndex]);
-  }, [activeIndexState, activeIndexState]);
+    setActiveIndex(props.activeIndex);
+    setTitle(state[props.activeIndex].title);
+    setSubTitle(state[props.activeIndex].subtitle);
+    setIllustration(state[props.activeIndex].illustration);
+  }, [props.activeIndex]);
 
-  const toggleAddField = state => {
-    setDialog(state);
+  const toggleAddField = status => {
+    setDialog(status);
   };
 
   const EditField = index => {
@@ -31,7 +33,7 @@ function Segment(props) {
     setEditIndex(index);
     setDialog(true);
   };
-  if (segment !== null) {
+  if (state[activeIndex] !== null) {
     return (
       <div
         style={{
@@ -46,40 +48,51 @@ function Segment(props) {
       >
         {dialog && (
           <AddFields
-            field={segment.fields[editIndex]}
+            field={state[activeIndex].fields[editIndex]}
             editField={editField}
             toggleDialog={toggleAddField}
             editFieldValue={value => {
-              editSegmentField(value, editIndex);
+              editSegmentField(activeIndex, value, editIndex);
               setEditIndex(null);
               setEditField(false);
             }}
-            addField={addSegmentField}
-            name={segment.title}
+            addField={value => addSegmentField(activeIndex, value)}
+            name={state[activeIndex].title}
           />
         )}
 
         <input
           style={styles.input}
-          // onFocus={()=>}
+          value={title}
           type="text"
-          placeholder={segment.title}
-          onChange={e => setSegmentKeys({ title: e.target.value })}
+          placeholder="Enter Section Title"
+          onChange={e => {
+            setSegmentKeys(activeIndex, { title: e.target.value });
+            setTitle(e.target.value);
+          }}
+        />
+        <input
+          value={subtitle}
+          style={styles.input}
+          type="text"
+          placeholder="Enter Section Subtitle"
+          onChange={e => {
+            setSegmentKeys(activeIndex, { subtitle: e.target.value });
+            setSubTitle(e.target.value);
+          }}
         />
         <input
           style={styles.input}
-          type="text"
-          placeholder={segment.subtitle}
-          onChange={e => setSegmentKeys({ subtitle: e.target.value })}
-        />
-        <input
-          style={styles.input}
+          value={illustration}
           type="url"
           placeholder="Enter URL for illustration (optional)"
-          onChange={e => setSegmentKeys({ illustration: e.target.value })}
+          onChange={e => {
+            setSegmentKeys(activeIndex, { illustration: e.target.value });
+            setIllustration(e.target.value);
+          }}
         />
-        {segment.fields.length !== 0 &&
-          segment.fields.map((item, index) => {
+        {state[activeIndex].fields.length !== 0 &&
+          state[activeIndex].fields.map((item, index) => {
             return (
               <div
                 style={{ border: "3px solid black", padding: 15, margin: 15 }}

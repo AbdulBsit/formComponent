@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 
 export default function AddFields(props) {
-  const [type, setType] = React.useState(
-    props?.field?.type ?? "custom_text_input"
-  );
+  const [type, setType] = React.useState(props?.field?.type ?? null);
 
-  const [name, setName] = React.useState(props?.field?.name ?? "bride_name");
+  const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(
     props?.field?.required ?? "true"
   );
@@ -13,6 +11,7 @@ export default function AddFields(props) {
   const [maxLength, setMaxLength] = React.useState(
     props?.field?.maxLength ?? null
   );
+
   const [textLayers, setTextLayers] = React.useState([]);
   const [imageLayers, setImageLayers] = React.useState([]);
   const [dateLayers, setDateLayers] = React.useState([]);
@@ -23,29 +22,28 @@ export default function AddFields(props) {
     { label: "Picker", value: "custom_picker" },
     { label: "Image", value: "custom_image_picker" }
   ]);
-  React.useEffect(() => {
-    setTextLayers(["bride_name", "grrom_name"]);
 
+  React.useEffect(() => {
+    // here all layers are fetched and sets
+
+    setTextLayers(["bride_name", "grrom_name"]);
     setImageLayers(["asset:couple.png"]);
     setDateLayers(["wedding_date"]);
     setMusicLayers(["asset:music.mp3”"]);
     setPickerLayer(["primary_event_title"]);
   }, []);
+
   const toggleDialog = state => {
     props.toggleDialog(state);
   };
-  // editFieldValue={value => {
-  //   editSegmentField(value, editIndex);
-  //   setEditIndex(null);
-  //   setEditField(false);
-  // }}
-  // addField={addSegmentField}
+
   const handleFieldSubmit = () => {
     props.editField
       ? props.editFieldValue({ type, label, required, maxLength, name })
       : props.addField({ type, label, required, maxLength, name });
     toggleDialog(false);
   };
+
   const renderTextInputCreator = () => (
     <div>
       <label for="label">Label : </label>
@@ -76,54 +74,11 @@ export default function AddFields(props) {
       <br />
     </div>
   );
-  const renderPickerCreator = () => (
-    <div>
-      This is Picker Creator
-      {/* <label for="label">Label : </label>
-      <input type="text" onChange={e => setLabel(e.target.value)} />
-      <label for="required">Required : </label>
-      <select
-        id="required"
-        onChange={e => {
-          setRequired(e.target.value);
-        }}
-      >
-        <option value={true}>Yes</option>
-        <option value={false}>No</option>
-      </select>
-      <label for="maxLength">Max length : </label>
-      <input type="number" onChange={e => setMaxLength(e.target.value)} /> */}
-    </div>
-  );
-  const renderImageCreator = () => (
-    <div>
-      This is Image Creator
-      {/* <label for="label">Label : </label>
-      <input type="text" onChange={e => setLabel(e.target.value)} />
-      <label for="required">Required : </label>
-      <select
-        id="required"
-        onChange={e => {
-          setRequired(e.target.value);
-        }}
-      >
-        <option value={true}>Yes</option>
-        <option value={false}>No</option>
-      </select>
-      <label for="maxLength">Max length : </label>
-      <input type="number" onChange={e => setMaxLength(e.target.value)} /> */}
-    </div>
-  );
+  const renderPickerCreator = () => <div>This is Picker Creator</div>;
+  const renderImageCreator = () => <div>This is Image Creator</div>;
+
   return (
-    <dialog
-      //   style={{
-      //     display: "flex",
-      //     flexDirection: "column",
-      //     justifyContent: "center",
-      //     alignItems: "center"
-      //   }}
-      open
-    >
+    <dialog open>
       <p>Add Field to {props.name} </p>
       <label for="type">Input Type : </label>
       <select
@@ -132,6 +87,9 @@ export default function AddFields(props) {
           setType(e.target.value);
         }}
       >
+        <option value="" disabled selected>
+          Select Input Type
+        </option>
         {inputTypes.map((item, index) => {
           return (
             <option key={index} value={item.value}>
@@ -149,8 +107,15 @@ export default function AddFields(props) {
             setName(e.target.value);
           }}
         >
+          {" "}
+          <option value="" disabled selected>
+            Select Field
+          </option>
           {type === "custom_text_input"
             ? textLayers.map((item, index) => {
+                if (usedTextLayers.includes(item)) {
+                  return;
+                }
                 return (
                   <option key={index} value={item}>
                     {item}
