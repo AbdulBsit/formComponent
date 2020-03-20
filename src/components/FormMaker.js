@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import Segment from "./Segment";
-import { useActions } from "../actions";
-import { store } from "../store";
+import { useActions } from "../contextState/actions";
+import { store } from "../contextState/store";
 
 function FormMaker() {
   const { state, dispatch } = React.useContext(store);

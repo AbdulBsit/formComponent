@@ -1,7 +1,7 @@
 import React from "react";
 import AddFields from "./AddFields";
-import { useActions } from "../actions";
-import { store } from "../store";
+import { useActions } from "../contextState/actions";
+import { store } from "../contextState/store";
 
 function Segment(props) {
   const { state, dispatch } = React.useContext(store);

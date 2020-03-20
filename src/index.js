@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { StateProvider } from "./store.js";
+import { StateProvider } from "./contextState/store.js";
 ReactDOM.render(
   <StateProvider>
     <App />

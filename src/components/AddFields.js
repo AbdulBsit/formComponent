@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-
+import { store } from "../contextState/store";
 export default function AddFields(props) {
+  //const { state, dispatch } = React.useContext(store);
   const [type, setType] = React.useState(props?.field?.type ?? null);
-
   const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(
     props?.field?.required ?? "true"
@@ -11,7 +11,6 @@ export default function AddFields(props) {
   const [maxLength, setMaxLength] = React.useState(
     props?.field?.maxLength ?? null
   );
-
   const [textLayers, setTextLayers] = React.useState([]);
   const [imageLayers, setImageLayers] = React.useState([]);
   const [dateLayers, setDateLayers] = React.useState([]);
