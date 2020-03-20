@@ -113,9 +113,6 @@ export default function AddFields(props) {
           </option>
           {type === "custom_text_input"
             ? textLayers.map((item, index) => {
-                if (usedTextLayers.includes(item)) {
-                  return;
-                }
                 return (
                   <option key={index} value={item}>
                     {item}
