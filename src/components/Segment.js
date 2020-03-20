@@ -1,119 +1,152 @@
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import AddFields from "./AddFields";
 import { useActions } from "../contextState/actions";
 import { store } from "../contextState/store";
 
-function Segment(props) {
-  const { state, dispatch } = React.useContext(store);
-  const { editSegmentField, addSegmentField, setSegmentKeys } = useActions();
-  const [editIndex, setEditIndex] = React.useState(null);
-  const [editField, setEditField] = React.useState(false);
-  const [activeIndex, setActiveIndex] = React.useState(props.activeIndex);
-  const [dialog, setDialog] = React.useState(false);
-  const [title, setTitle] = React.useState(state[props.activeIndex].title);
-  const [subtitle, setSubTitle] = React.useState(
-    state[props.activeIndex].subtitle
-  );
-  const [illustration, setIllustration] = React.useState(
-    state[props.activeIndex].illustration
-  );
-  React.useEffect(() => {
-    setActiveIndex(props.activeIndex);
-    setTitle(state[props.activeIndex].title);
-    setSubTitle(state[props.activeIndex].subtitle);
-    setIllustration(state[props.activeIndex].illustration);
-  }, [props.activeIndex]);
+function Segment({ activeIndex, prevSegment, nextSegment }) {
+  const { state } = useContext(store);
+  const {
+    editSegmentField,
+    addSegmentField,
+    removeSegment,
+    removeField,
+    setSegmentKeys
+  } = useActions();
+  const [editIndex, setEditIndex] = useState(null);
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [value, setvalue] = useState(null);
+  // TODO deepCompare
+  useEffect(() => {}, [activeIndex, state, value]);
 
-  const toggleAddField = status => {
-    setDialog(status);
-  };
-
-  const EditField = index => {
-    setEditField(true);
+  const openEditDialog = index => {
+    // TODO async dialog
+    // const values = await showEditPrompt(initialValues);
     setEditIndex(index);
-    setDialog(true);
+    setIsDialogVisible(true);
   };
-  if (state[activeIndex] !== null) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          border: "1px solid black",
-          margin: 15,
-          width: "50%",
-          height: "100%",
-          padding: 15,
-          flexDirection: "column"
+
+  const editFieldValue = value => {
+    editSegmentField(activeIndex, value, editIndex);
+    setEditIndex(null);
+  };
+
+  if (state[activeIndex] == null) {
+    return null;
+  }
+
+  const fieldPreview = (item, index) => {
+    switch (item.type) {
+      case "custom_text_input":
+        return (
+          <div style={styles.field} key={index}>
+            <p>
+              <b>{item.label}</b>
+              <br />
+              Required :{item.required}, Max Length :{item.maxLength}
+            </p>
+            <button onClick={() => openEditDialog(index)}>Edit</button>
+            <button onClick={() => removeField(activeIndex, index)}>
+              Delete
+            </button>
+          </div>
+        );
+      case "custom_picker":
+        return (
+          <div style={styles.field} key={index}>
+            <p>
+              <b>{item.label}</b>
+              <br />
+              Required :{item.required},
+              <br />
+              <h4>Options</h4>
+              {item.options.map((item, index) => {
+                return (
+                  <p>
+                    {index + 1} - {item.label}
+                  </p>
+                );
+              })}
+            </p>
+            <button onClick={() => openEditDialog(index)}>Edit</button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  let { title, subtitle, illustration } = state[activeIndex];
+  return (
+    <div style={styles.container}>
+      <button
+        disabled={state.length === 1}
+        onClick={() => {
+          activeIndex !== 0 && prevSegment();
+          removeSegment(activeIndex);
         }}
       >
-        {dialog && (
-          <AddFields
-            field={state[activeIndex].fields[editIndex]}
-            editField={editField}
-            toggleDialog={toggleAddField}
-            editFieldValue={value => {
-              editSegmentField(activeIndex, value, editIndex);
-              setEditIndex(null);
-              setEditField(false);
-            }}
-            addField={value => addSegmentField(activeIndex, value)}
-            name={state[activeIndex].title}
-          />
-        )}
+        Delete
+      </button>
+      {isDialogVisible && (
+        <AddFields
+          field={state[activeIndex].fields[editIndex]}
+          editField={editIndex !== null}
+          toggleDialog={setIsDialogVisible}
+          editFieldValue={editFieldValue}
+          addField={value => addSegmentField(activeIndex, value)}
+          name={state[activeIndex].title}
+        />
+      )}
+      <input
+        style={styles.input}
+        value={title}
+        type="text"
+        placeholder="Enter Section Title"
+        onChange={e => {
+          setvalue(Math.random());
+          setSegmentKeys(activeIndex, { title: e.target.value });
+        }}
+      />
+      <input
+        value={subtitle}
+        style={styles.input}
+        type="text"
+        placeholder="Enter Section Subtitle"
+        onChange={e => {
+          setvalue(Math.random());
+          setSegmentKeys(activeIndex, { subtitle: e.target.value });
+        }}
+      />
+      <input
+        style={styles.input}
+        value={illustration}
+        type="url"
+        placeholder="Enter URL for illustration (optional)"
+        onChange={e => {
+          setvalue(Math.random());
+          setSegmentKeys(activeIndex, { illustration: e.target.value });
+        }}
+      />
 
-        <input
-          style={styles.input}
-          value={title}
-          type="text"
-          placeholder="Enter Section Title"
-          onChange={e => {
-            setSegmentKeys(activeIndex, { title: e.target.value });
-            setTitle(e.target.value);
-          }}
-        />
-        <input
-          value={subtitle}
-          style={styles.input}
-          type="text"
-          placeholder="Enter Section Subtitle"
-          onChange={e => {
-            setSegmentKeys(activeIndex, { subtitle: e.target.value });
-            setSubTitle(e.target.value);
-          }}
-        />
-        <input
-          style={styles.input}
-          value={illustration}
-          type="url"
-          placeholder="Enter URL for illustration (optional)"
-          onChange={e => {
-            setSegmentKeys(activeIndex, { illustration: e.target.value });
-            setIllustration(e.target.value);
-          }}
-        />
-        {state[activeIndex].fields.length !== 0 &&
-          state[activeIndex].fields.map((item, index) => {
-            return (
-              <div
-                style={{ border: "3px solid black", padding: 15, margin: 15 }}
-                key={index}
-              >
-                <p>
-                  <b>{item.label}</b>
-                </p>
-                <p>
-                  Required :{item.required}, Max Lenght :{item.maxLength}
-                </p>
-                <button onClick={() => EditField(index)}>Edit</button>
-              </div>
-            );
-          })}
-        <button onClick={() => toggleAddField(true)}>Add Field</button>
-      </div>
-    );
-  } else return null;
+      {state[activeIndex].fields.map((item, index) => {
+        return fieldPreview(item, index);
+      })}
+
+      <button onClick={() => setIsDialogVisible(true)}>Add Field</button>
+    </div>
+  );
 }
 const styles = {
-  input: { padding: 5, margin: 5 }
+  input: { padding: 5, margin: 5 },
+  container: {
+    display: "flex",
+    border: "1px solid black",
+    margin: 15,
+    width: "50%",
+    height: "100%",
+    padding: 15,
+    flexDirection: "column"
+  },
+  field: { border: "3px solid black", padding: 15, margin: 15 }
 };
 export default Segment;

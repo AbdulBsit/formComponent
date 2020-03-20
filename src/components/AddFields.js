@@ -5,11 +5,19 @@ export default function AddFields(props) {
   const [type, setType] = React.useState(props?.field?.type ?? null);
   const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(
-    props?.field?.required ?? "true"
+    props?.field?.required ?? null
   );
   const [label, setLabel] = React.useState(props?.field?.label ?? "");
   const [maxLength, setMaxLength] = React.useState(
     props?.field?.maxLength ?? null
+  );
+  const [options, setOptions] = React.useState(
+    props?.field?.options ?? [
+      {
+        label: "",
+        value: ""
+      }
+    ]
   );
   const [textLayers, setTextLayers] = React.useState([]);
   const [imageLayers, setImageLayers] = React.useState([]);
@@ -30,6 +38,9 @@ export default function AddFields(props) {
     setDateLayers(["wedding_date"]);
     setMusicLayers(["asset:music.mp3”"]);
     setPickerLayer(["primary_event_title"]);
+    return function() {
+      console.log("unmounting");
+    };
   }, []);
 
   const toggleDialog = state => {
@@ -37,9 +48,20 @@ export default function AddFields(props) {
   };
 
   const handleFieldSubmit = () => {
-    props.editField
-      ? props.editFieldValue({ type, label, required, maxLength, name })
-      : props.addField({ type, label, required, maxLength, name });
+    switch (type) {
+      case "custom_text_input":
+        props.editField
+          ? props.editFieldValue({ type, label, required, maxLength, name })
+          : props.addField({ type, label, required, maxLength, name });
+        break;
+      case "custom_picker":
+        props.editField
+          ? props.editFieldValue({ type, label, required, options, name })
+          : props.addField({ type, label, required, options, name });
+        break;
+      default:
+        throw new Error();
+    }
     toggleDialog(false);
   };
 
@@ -60,6 +82,9 @@ export default function AddFields(props) {
           setRequired(e.target.value);
         }}
       >
+        <option value="" disabled selected>
+          Select Required
+        </option>
         <option value={true}>Yes</option>
         <option value={false}>No</option>
       </select>
@@ -73,8 +98,138 @@ export default function AddFields(props) {
       <br />
     </div>
   );
-  const renderPickerCreator = () => <div>This is Picker Creator</div>;
+  const handleOption = (index, key, value) => {
+    if (key === "label") {
+      setOptions(
+        options.map((item, i) => {
+          if (i === index) {
+            return { ...item, label: value };
+          }
+          return item;
+        })
+      );
+    } else {
+      setOptions(
+        options.map((item, i) => {
+          if (i === index) {
+            return { ...item, value: value };
+          }
+          return item;
+        })
+      );
+    }
+  };
+  const handleOptionDelete = index => {
+    setOptions(options.filter((item, i) => i !== index));
+  };
+  const addOption = () => {
+    setOptions([...options, { label: "", value: "" }]);
+  };
+  const renderPickerCreator = () => (
+    <div>
+      <label for="label">Label : </label>
+      <input
+        value={label}
+        type="text"
+        onChange={e => setLabel(e.target.value)}
+      />
+      <br />
+      <label for="required">Required : </label>
+      <select
+        value={required}
+        id="required"
+        onChange={e => {
+          setRequired(e.target.value);
+        }}
+      >
+        {" "}
+        <option value="" disabled selected>
+          Select Required
+        </option>
+        <option value={true}>Yes</option>
+        <option value={false}>No</option>
+      </select>
+      <br />
+      {options.map((item, index) => {
+        return (
+          <div key={index}>
+            <lable for="label">Option Label</lable>
+            <input
+              placeholder="Enter Label"
+              onChange={e => handleOption(index, "label", e.target.value)}
+              type="text"
+              value={item.label}
+            />
+            <label for="value">Option Value</label>
+            <input
+              placeholder="Enter Value"
+              onChange={e => handleOption(index, "value", e.target.value)}
+              type="text"
+              value={item.value}
+            />
+            <button
+              onClick={() => handleOptionDelete(index)}
+              disabled={options.length === 1}
+            >
+              Delete
+            </button>
+          </div>
+        );
+      })}
+      <br />
+      <button onClick={() => addOption()}>Add option</button>
+      <br />
+    </div>
+  );
   const renderImageCreator = () => <div>This is Image Creator</div>;
+  const renderInputForm = () => {
+    switch (type) {
+      case "custom_text_input":
+        return renderTextInputCreator();
+
+      case "custom_picker":
+        return renderPickerCreator();
+
+      case "custom_image_picker":
+        return renderImageCreator();
+
+      default:
+        return null;
+    }
+  };
+  const fieldsSelector = () => {
+    switch (type) {
+      case "custom_text_input":
+        return textLayers.map((item, index) => {
+          return (
+            <option key={index} value={item}>
+              {item}
+            </option>
+          );
+        });
+
+      case "custom_image_picker":
+        return imageLayers.map((item, index) => {
+          return (
+            <option key={index} value={item}>
+              {item}
+            </option>
+          );
+        });
+
+      case "custom_picker":
+        return pickerLayers.map((item, index) => {
+          return (
+            <option key={index} value={item}>
+              {item}
+            </option>
+          );
+        });
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <dialog open>
@@ -106,44 +261,13 @@ export default function AddFields(props) {
             setName(e.target.value);
           }}
         >
-          {" "}
           <option value="" disabled selected>
             Select Field
           </option>
-          {type === "custom_text_input"
-            ? textLayers.map((item, index) => {
-                return (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                );
-              })
-            : type === "custom_image_picker"
-            ? imageLayers.map((item, index) => {
-                return (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                );
-              })
-            : type === "custom_picker"
-            ? pickerLayers.map((item, index) => {
-                return (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                );
-              })
-            : null}
+          {fieldsSelector()}
         </select>
       </div>
-      {type === "custom_text_input"
-        ? renderTextInputCreator()
-        : type === "custom_picker"
-        ? renderPickerCreator()
-        : type === "custom_image_picker"
-        ? renderImageCreator()
-        : null}
+      {renderInputForm()}
       <div
         style={{
           display: "flex",
