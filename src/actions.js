@@ -8,12 +8,14 @@ export function useActions() {
   function addSection() {
     dispatch({ type: ADD_SEGMENT, payload: state });
   }
+
   function setSegmentKeys(activeIndex, value) {
     dispatch({
       type: EDIT_SEGMENT_KEYS,
       payload: { activeIndex, value }
     });
   }
+
   function addSegmentField(activeIndex, value) {
     dispatch({
       type: EDIT_SEGMENT_KEYS,

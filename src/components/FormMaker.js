@@ -13,6 +13,7 @@ function FormMaker() {
     setActiveIndex(activeIndex + 1);
     addSection();
   };
+
   const prevSegment = () => {
     setActiveIndex(activeIndex - 1);
   };
@@ -29,6 +30,9 @@ function FormMaker() {
         justifyContent: "center"
       }}
     >
+      <p>
+        On section {activeIndex + 1} of {state.length}
+      </p>
       <div style={{ alignSelf: "center" }}>
         <button onClick={prevSegment} disabled={activeIndex === 0}>
           Go To previous

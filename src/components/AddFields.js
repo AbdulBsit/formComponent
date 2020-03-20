@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 export default function AddFields(props) {
   const [type, setType] = React.useState(props?.field?.type ?? null);
-
   const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(
     props?.field?.required ?? "true"
@@ -78,7 +77,7 @@ export default function AddFields(props) {
   const renderImageCreator = () => <div>This is Image Creator</div>;
 
   return (
-    <dialog open>
+    <dialog open={props.isDialogVisible}>
       <p>Add Field to {props.name} </p>
       <label for="type">Input Type : </label>
       <select
