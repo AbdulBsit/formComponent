@@ -35,7 +35,7 @@ export default function AddFields(props) {
   React.useEffect(() => {
     // here all layers are fetched and sets
 
-    setTextLayers(["bride_name", "grrom_name"]);
+    setTextLayers(["bride_name", "groom_name"]);
     setImageLayers(["asset:couple.png"]);
     setDateLayers(["wedding_date"]);
     setMusicLayers(["asset:music.mp3”"]);
@@ -240,6 +240,9 @@ export default function AddFields(props) {
     switch (type) {
       case "custom_text_input":
         return textLayers.map((item, index) => {
+          if (props.usedFields.includes(item)) {
+            return;
+          }
           return (
             <option key={index} value={item}>
               {item}
@@ -249,6 +252,9 @@ export default function AddFields(props) {
 
       case "custom_image_picker":
         return imageLayers.map((item, index) => {
+          if (props.usedFields.includes(item)) {
+            return;
+          }
           return (
             <option key={index} value={item}>
               {item}
@@ -258,6 +264,9 @@ export default function AddFields(props) {
 
       case "custom_picker":
         return pickerLayers.map((item, index) => {
+          if (props.usedFields.includes(item)) {
+            return;
+          }
           return (
             <option key={index} value={item}>
               {item}

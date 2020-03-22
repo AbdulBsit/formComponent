@@ -8,7 +8,7 @@ function FormMaker() {
   const { state, dispatch } = React.useContext(store);
   const { addSection } = useActions();
   const [activeIndex, setActiveIndex] = useState(0);
-
+  const [usedFields, setUsedFields] = useState([]);
   const addSegment = () => {
     setActiveIndex(activeIndex + 1);
     addSection();
@@ -39,7 +39,8 @@ function FormMaker() {
         </button>
       </div>
       <Segment
-        nextSegment={nextSegment}
+        usedFields={usedFields}
+        setUsedFields={setUsedFields}
         prevSegment={prevSegment}
         activeIndex={activeIndex}
       />

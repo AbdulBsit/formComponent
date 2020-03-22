@@ -3,7 +3,7 @@ import AddFields from "./AddFields";
 import { useActions } from "../contextState/actions";
 import { store } from "../contextState/store";
 
-function Segment({ activeIndex, prevSegment, nextSegment }) {
+function Segment({ activeIndex, prevSegment, usedFields, setUsedFields }) {
   const { state } = useContext(store);
   const {
     editSegmentField,
@@ -25,8 +25,20 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
     setEditIndex(index);
     setIsDialogVisible(true);
   };
-
+  const addFieldValue = value => {
+    setUsedFields([...usedFields, value.name]);
+    addSegmentField(activeIndex, value);
+  };
   const editFieldValue = value => {
+    if (state[activeIndex].fields[editIndex].name !== value.name) {
+      setUsedFields(
+        usedFields.map(item => {
+          if (item === state[activeIndex].fields[editIndex].name) {
+            return value.name;
+          } else return item;
+        })
+      );
+    }
     editSegmentField(activeIndex, value, editIndex);
     setEditIndex(null);
   };
@@ -34,7 +46,13 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
   if (state[activeIndex] == null) {
     return null;
   }
-
+  const deleteSegment = () => {
+    var fields = state[activeIndex].fields.map(i => i.name);
+    console.log(fields);
+    setUsedFields(usedFields.filter(i => !fields.includes(i)));
+    activeIndex !== 0 && prevSegment();
+    removeSegment(activeIndex);
+  };
   const fieldPreview = (item, index) => {
     switch (item.type) {
       case "custom_text_input":
@@ -60,7 +78,12 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
               Required :{item.required}, Max Length :{item.maxLength}
             </p>
             <button onClick={() => openEditDialog(index)}>Edit</button>
-            <button onClick={() => removeField(activeIndex, index)}>
+            <button
+              onClick={() => {
+                setUsedFields(usedFields.filter(i => i !== item.name));
+                removeField(activeIndex, index);
+              }}
+            >
               Delete
             </button>
           </div>
@@ -97,7 +120,12 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
               })}
             </p>
             <button onClick={() => openEditDialog(index)}>Edit</button>
-            <button onClick={() => removeField(activeIndex, index)}>
+            <button
+              onClick={() => {
+                setUsedFields(usedFields.filter(i => i !== item.name));
+                removeField(activeIndex, index);
+              }}
+            >
               Delete
             </button>
           </div>
@@ -126,7 +154,12 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
               {item.height}
             </p>
             <button onClick={() => openEditDialog(index)}>Edit</button>
-            <button onClick={() => removeField(activeIndex, index)}>
+            <button
+              onClick={() => {
+                setUsedFields(usedFields.filter(i => i !== item.name));
+                removeField(activeIndex, index);
+              }}
+            >
               Delete
             </button>
           </div>
@@ -139,22 +172,17 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
   let { title, subtitle, illustration } = state[activeIndex];
   return (
     <div style={styles.container}>
-      <button
-        disabled={state.length === 1}
-        onClick={() => {
-          activeIndex !== 0 && prevSegment();
-          removeSegment(activeIndex);
-        }}
-      >
+      <button disabled={state.length === 1} onClick={deleteSegment}>
         Delete
       </button>
       {isDialogVisible && (
         <AddFields
+          usedFields={usedFields}
           field={state[activeIndex].fields[editIndex]}
           editField={editIndex !== null}
           toggleDialog={setIsDialogVisible}
           editFieldValue={editFieldValue}
-          addField={value => addSegmentField(activeIndex, value)}
+          addField={addFieldValue}
           name={state[activeIndex].title}
         />
       )}
