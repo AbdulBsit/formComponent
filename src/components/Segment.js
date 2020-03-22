@@ -69,13 +69,14 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
         return (
           <div
             draggable={true}
-            onDrop={e =>
+            onDrop={e => {
               swapFields(
                 activeIndex,
                 e.dataTransfer.getData("text/plain"),
                 index
-              )
-            }
+              );
+              setValue(Math.random());
+            }}
             onDragOver={e => e.preventDefault()}
             onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
             style={styles.field}
@@ -106,13 +107,14 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
           <div
             style={styles.field}
             draggable={true}
-            onDrop={e =>
+            onDrop={e => {
               swapFields(
                 activeIndex,
                 e.dataTransfer.getData("text/plain"),
                 index
-              )
-            }
+              );
+              setValue(Math.random());
+            }}
             onDragOver={e => e.preventDefault()}
             onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
             key={index}
