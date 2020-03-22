@@ -10,11 +10,12 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
     addSegmentField,
     removeSegment,
     removeField,
+    swapFields,
     setSegmentKeys
   } = useActions();
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [value, setvalue] = useState(null);
+  const [value, setValue] = useState(null);
   // TODO deepCompare
   useEffect(() => {}, [activeIndex, state, value]);
 
@@ -38,7 +39,21 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
     switch (item.type) {
       case "custom_text_input":
         return (
-          <div style={styles.field} key={index}>
+          <div
+            style={styles.field}
+            draggable={true}
+            onDrop={e => {
+              swapFields(
+                activeIndex,
+                e.dataTransfer.getData("text/plain"),
+                index
+              );
+              setValue(Math.random());
+            }}
+            onDragOver={e => e.preventDefault()}
+            onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
+            key={index}
+          >
             <p>
               <b>{item.label}</b>
               <br />
@@ -52,7 +67,20 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
         );
       case "custom_picker":
         return (
-          <div style={styles.field} key={index}>
+          <div
+            draggable={true}
+            onDrop={e =>
+              swapFields(
+                activeIndex,
+                e.dataTransfer.getData("text/plain"),
+                index
+              )
+            }
+            onDragOver={e => e.preventDefault()}
+            onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
+            style={styles.field}
+            key={index}
+          >
             <p>
               <b>{item.label}</b>
               <br />
@@ -68,6 +96,37 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
               })}
             </p>
             <button onClick={() => openEditDialog(index)}>Edit</button>
+            <button onClick={() => removeField(activeIndex, index)}>
+              Delete
+            </button>
+          </div>
+        );
+      case "custom_image_picker":
+        return (
+          <div
+            style={styles.field}
+            draggable={true}
+            onDrop={e =>
+              swapFields(
+                activeIndex,
+                e.dataTransfer.getData("text/plain"),
+                index
+              )
+            }
+            onDragOver={e => e.preventDefault()}
+            onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
+            key={index}
+          >
+            <p>
+              <b>{item.label}</b>
+              <br />
+              Required :{item.required}, width :{item.width}, height :
+              {item.height}
+            </p>
+            <button onClick={() => openEditDialog(index)}>Edit</button>
+            <button onClick={() => removeField(activeIndex, index)}>
+              Delete
+            </button>
           </div>
         );
       default:
@@ -103,7 +162,7 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
         type="text"
         placeholder="Enter Section Title"
         onChange={e => {
-          setvalue(Math.random());
+          setValue(Math.random());
           setSegmentKeys(activeIndex, { title: e.target.value });
         }}
       />
@@ -113,7 +172,7 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
         type="text"
         placeholder="Enter Section Subtitle"
         onChange={e => {
-          setvalue(Math.random());
+          setValue(Math.random());
           setSegmentKeys(activeIndex, { subtitle: e.target.value });
         }}
       />
@@ -123,7 +182,7 @@ function Segment({ activeIndex, prevSegment, nextSegment }) {
         type="url"
         placeholder="Enter URL for illustration (optional)"
         onChange={e => {
-          setvalue(Math.random());
+          setValue(Math.random());
           setSegmentKeys(activeIndex, { illustration: e.target.value });
         }}
       />

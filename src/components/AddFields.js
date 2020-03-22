@@ -19,6 +19,8 @@ export default function AddFields(props) {
       }
     ]
   );
+  const [width, setWidth] = React.useState(props?.field?.width ?? 0);
+  const [height, setHeight] = React.useState(props?.field?.height ?? 0);
   const [textLayers, setTextLayers] = React.useState([]);
   const [imageLayers, setImageLayers] = React.useState([]);
   const [dateLayers, setDateLayers] = React.useState([]);
@@ -59,6 +61,11 @@ export default function AddFields(props) {
           ? props.editFieldValue({ type, label, required, options, name })
           : props.addField({ type, label, required, options, name });
         break;
+      case "custom_image_picker":
+        props.editField
+          ? props.editFieldValue({ type, label, required, width, height, name })
+          : props.addField({ type, label, required, width, height, name });
+        break;
       default:
         throw new Error();
     }
@@ -98,26 +105,21 @@ export default function AddFields(props) {
       <br />
     </div>
   );
-  const handleOption = (index, key, value) => {
-    if (key === "label") {
-      setOptions(
-        options.map((item, i) => {
-          if (i === index) {
-            return { ...item, label: value };
-          }
-          return item;
-        })
-      );
-    } else {
-      setOptions(
-        options.map((item, i) => {
-          if (i === index) {
-            return { ...item, value: value };
-          }
-          return item;
-        })
-      );
-    }
+  const handleOption = (index, value) => {
+    setOptions(
+      options.map((item, i) => {
+        if (i === index) {
+          return {
+            label: value,
+            value: value
+              .toLowerCase()
+              .split(" ")
+              .join("_")
+          };
+        }
+        return item;
+      })
+    );
   };
   const handleOptionDelete = index => {
     setOptions(options.filter((item, i) => i !== index));
@@ -156,16 +158,9 @@ export default function AddFields(props) {
             <lable for="label">Option Label</lable>
             <input
               placeholder="Enter Label"
-              onChange={e => handleOption(index, "label", e.target.value)}
+              onChange={e => handleOption(index, e.target.value)}
               type="text"
               value={item.label}
-            />
-            <label for="value">Option Value</label>
-            <input
-              placeholder="Enter Value"
-              onChange={e => handleOption(index, "value", e.target.value)}
-              type="text"
-              value={item.value}
             />
             <button
               onClick={() => handleOptionDelete(index)}
@@ -181,7 +176,51 @@ export default function AddFields(props) {
       <br />
     </div>
   );
-  const renderImageCreator = () => <div>This is Image Creator</div>;
+  const renderImageCreator = () => (
+    <div>
+      <label for="label">Label : </label>
+      <input
+        value={label}
+        type="text"
+        onChange={e => setLabel(e.target.value)}
+      />
+      <br />
+      <label for="required">Required : </label>
+      <select
+        value={required}
+        id="required"
+        onChange={e => {
+          setRequired(e.target.value);
+        }}
+      >
+        <option value="" disabled selected>
+          Select Required
+        </option>
+        <option value={true}>Yes</option>
+        <option value={false}>No</option>
+      </select>
+      <br />
+      <label for="width">Enter Width : </label>
+      <input
+        id="width"
+        value={width}
+        type="number"
+        onChange={e => {
+          setWidth(e.target.value);
+        }}
+      />
+      <br />
+      <label for="height">Enter Height : </label>
+      <input
+        id="height"
+        value={height}
+        type="number"
+        onChange={e => {
+          setHeight(e.target.value);
+        }}
+      />
+    </div>
+  );
   const renderInputForm = () => {
     switch (type) {
       case "custom_text_input":

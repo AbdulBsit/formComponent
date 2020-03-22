@@ -3,7 +3,8 @@ import {
   ADD_SEGMENT,
   REMOVE_SEGMENT,
   REMOVE_FIELD,
-  EDIT_SEGMENT_KEYS
+  EDIT_SEGMENT_KEYS,
+  SWAP_SEGMENT_FIELDS
 } from "./Reducer";
 import { store } from "./store";
 
@@ -54,7 +55,14 @@ export function useActions() {
       }
     });
   }
+  function swapFields(activeIndex, swapIndex, targetSwapIndex) {
+    dispatch({
+      type: SWAP_SEGMENT_FIELDS,
+      payload: { activeIndex, swapIndex, targetSwapIndex }
+    });
+  }
   return {
+    swapFields,
     addSection,
     setSegmentKeys,
     addSegmentField,

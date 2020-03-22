@@ -4,6 +4,7 @@ export const REMOVE_SEGMENT = "REMOVE_SEGMENT";
 export const EDIT_SEGMENT_KEYS = "EDIT_SEGMENT_KEYS";
 export const SET_ACTIVE_INDEX = "SET_ACTIVE_INDEX";
 export const REMOVE_FIELD = "REMOVE_FIELD";
+export const SWAP_SEGMENT_FIELDS = "SWAP_SEGMENT_FIELDS";
 export function segmentReducer(state, action) {
   switch (action.type) {
     case ADD_SEGMENT:
@@ -33,6 +34,16 @@ export function segmentReducer(state, action) {
         ...state[action.payload.activeIndex],
         ...action.payload.value
       };
+      return state;
+    case SWAP_SEGMENT_FIELDS:
+      var { activeIndex, swapIndex, targetSwapIndex } = action.payload;
+      [
+        state[activeIndex].fields[swapIndex],
+        state[activeIndex].fields[targetSwapIndex]
+      ] = [
+        state[activeIndex].fields[targetSwapIndex],
+        state[activeIndex].fields[swapIndex]
+      ];
       return state;
     default:
       throw new Error();
