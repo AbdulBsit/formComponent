@@ -36,6 +36,7 @@ export default function FilePicker() {
       }}
     >
       <div>
+        <img src={require("../assets/blackUpload.svg")} />
         <p style={{ fontSize: 30, fontWeight: "bold" }}>
           Drag & Drop APEX File Here
         </p>
