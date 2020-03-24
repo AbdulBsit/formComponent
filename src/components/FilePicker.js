@@ -5,18 +5,24 @@ export default function FilePicker() {
   const pickFile = e => {
     try {
       const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (function() {
-        return function(e) {
-          setFile(e.target.result);
-        };
-      })(file);
-      reader.readAsDataURL(file);
+      setFile(file.name);
+      // const reader = new FileReader();
+      // reader.onload = (function() {
+      //   return function(e) {
+      //     setFile(e.target.result);
+      //   };
+      // })(file);
+      // reader.readAsDataURL(file);
     } catch (err) {}
   };
 
   return (
     <label
+      onDragOver={e => e.preventDefault()}
+      onDrop={ev => {
+        ev.preventDefault();
+        setFile(ev.dataTransfer.files[0].name);
+      }}
       for="apex_input"
       class="file_input"
       style={{
@@ -36,6 +42,7 @@ export default function FilePicker() {
       }}
     >
       <div>
+        {file !== null && <p>Uploaded - {file}</p>}
         <img src={require("../assets/blackUpload.svg")} />
         <p style={{ fontSize: 30, fontWeight: "bold" }}>
           Drag & Drop APEX File Here
