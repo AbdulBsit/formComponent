@@ -1,7 +1,8 @@
 import React from "react";
 import FormMaker from "./components/FormMaker";
+import FilePicker from "./components/FilePicker";
 function App() {
-  return <FormMaker />;
+  return <FilePicker />;
 }
 
 export default App;
