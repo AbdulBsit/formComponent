@@ -49,12 +49,3 @@ export function segmentReducer(state, action) {
       throw new Error();
   }
 }
-
-// export function activeIndexReducer(state, action) {
-//   switch (action.type) {
-//     case SET_ACTIVE_INDEX:
-//       return action.payload;
-//     default:
-//       return state;
-//   }
-// }
