@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
-import { store } from "../contextState/store";
-export default function AddFields(props) {
-  //const { state, dispatch } = React.useContext(store);
+import React from "react";
+
+export default function AddFieldDialog(props) {
   const [type, setType] = React.useState(props?.field?.type ?? null);
   const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(

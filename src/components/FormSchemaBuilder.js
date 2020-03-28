@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useState, useContext } from "react";
 import Segment from "./Segment";
-import { useActions } from "../contextState/actions";
-import { store } from "../contextState/store";
+import { useActions } from "../../contextStore/actions";
+import { store } from "../../contextStore/store";
 
-function FormMaker() {
-  const { state, dispatch } = React.useContext(store);
+function FormSchemaBuilder() {
+  const { state, dispatch } = useContext(store);
   const { addSection } = useActions();
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
@@ -61,4 +60,4 @@ function FormMaker() {
     </div>
   );
 }
-export default FormMaker;
+export default FormSchemaBuilder;

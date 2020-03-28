@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
 export default function FilePicker() {
   const [file, setFile] = useState(null);
   const pickFile = e => {

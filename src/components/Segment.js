@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import AddFields from "./AddFields";
-import { useActions } from "../contextState/actions";
-import { store } from "../contextState/store";
+import AddFields from "./AddFieldDialog";
+import { useActions } from "../../contextStore/actions";
+import { store } from "../../contextStore/store";
 
 function Segment({ activeIndex, prevSegment, usedFields, setUsedFields }) {
   const { state } = useContext(store);
